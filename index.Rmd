@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "Visualization of Cybersecurity Incidents"
+author: "Wei Xiong Toh, Yu Song Ng"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
