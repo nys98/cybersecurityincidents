@@ -1,6 +1,7 @@
 # Proposal
 
 ## Research topic
+Cybersecurity has become a growing issue globally, with the increase in internet penetration and things moving online. Our project will investigate high-impact cyber attacks and incidents on government agencies, defense and high tech companies, or economic crimes with losses of more than a million dollars, retrieved from the Center for Strategic & International Studies: https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents. 
 
 ## Data availability
-
+The data we will be using comes from the website mentioned above, from which one can download a PDF text file `221006_Significant_Cyber_Incidents.pdf` containing all the major cyber attacks from 2006 to present. Using regex and natural language processing, we can split the text data into several variables: time of attack, origin of attacker, origin of victim, type of attack and the industry affected. 
