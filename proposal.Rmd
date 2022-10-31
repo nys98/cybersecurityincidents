@@ -5,3 +5,5 @@ Cybersecurity has become a growing issue globally, with the increase in internet
 
 ## Data availability
 The data we will be using comes from the website mentioned above, from which one can download a PDF text file `221006_Significant_Cyber_Incidents.pdf` containing all the major cyber attacks from 2006 to present. Using regex and natural language processing, we can split the text data into several variables: time of attack, origin of attacker, origin of victim, type of attack and the industry affected. 
+
+We will look for methods to group the attacker and victim origin countries (e.g. by continent/GDP per capita) for analysis. At the same time, we will also consider exogenous variables that might affect the frequency/nature of cyber attacks, such as periods coinciding with the Ukraine War, COVID-19 pandemic etc. 
