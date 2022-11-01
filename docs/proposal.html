@@ -4,26 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Proposal | YOUR TITLE HERE</title>
-  <meta name="description" content="Chapter 2 Proposal | YOUR TITLE HERE" />
+  <title>Chapter 2 Proposal | Visualization of Cybersecurity Incidents</title>
+  <meta name="description" content="Chapter 2 Proposal | Visualization of Cybersecurity Incidents" />
   <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Proposal | YOUR TITLE HERE" />
+  <meta property="og:title" content="Chapter 2 Proposal | Visualization of Cybersecurity Incidents" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Proposal | YOUR TITLE HERE" />
+  <meta name="twitter:title" content="Chapter 2 Proposal | Visualization of Cybersecurity Incidents" />
   
   
   
 
-<meta name="author" content="YOUR NAMES HERE" />
+<meta name="author" content="Wei Xiong Toh, Yu Song Ng" />
 
 
-<meta name="date" content="2022-10-22" />
+<meta name="date" content="2022-11-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -69,7 +69,7 @@
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">SHORT TITLE HERE</a></li>
+<li><a href="./">cybersec incidents</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
@@ -77,6 +77,7 @@
 <ul>
 <li class="chapter" data-level="2.1" data-path="proposal.html"><a href="proposal.html#research-topic"><i class="fa fa-check"></i><b>2.1</b> Research topic</a></li>
 <li class="chapter" data-level="2.2" data-path="proposal.html"><a href="proposal.html#data-availability"><i class="fa fa-check"></i><b>2.2</b> Data availability</a></li>
+<li class="chapter" data-level="2.3" data-path="proposal.html"><a href="proposal.html#motivation"><i class="fa fa-check"></i><b>2.3</b> Motivation</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>3</b> Data</a>
 <ul>
@@ -98,7 +99,7 @@
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">YOUR TITLE HERE</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Visualization of Cybersecurity Incidents</a>
           </h1>
         </div>
 
@@ -110,9 +111,16 @@
 <h1><span class="header-section-number">Chapter 2</span> Proposal<a href="proposal.html#proposal" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="research-topic" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Research topic<a href="proposal.html#research-topic" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Cybersecurity has become a growing issue globally, with the increase in internet penetration and digitalization. According to the FBI, the number of reported cybercrime incidents rose by about 300% in 2020 within the US alone. This does not come as a surprise since the COVID-19 pandemic provided the impetus for digital migration, which naturally leads to an increased financial incentive for hackers. Coincidentally, there has been an uptick in the use of cyber attacks by nation states fueled by the rise in geopolitical tensions between countries. Disruptions brought about by such incidents of cyber warfare are a cause of concern given their scale.</p>
+<p>Our project will investigate high-impact cyber attacks and incidents on government agencies, defense and high tech companies, or economic crimes with losses of more than a million dollars, retrieved from the Center for Strategic &amp; International Studies: <a href="https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents" class="uri">https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents</a>.</p>
 </div>
 <div id="data-availability" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Data availability<a href="proposal.html#data-availability" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The data we will be using comes from the website mentioned above, from which one can download a PDF text file <code>221006_Significant_Cyber_Incidents.pdf</code> containing all the major cyber attacks from 2006 to present. Using regex and natural language processing, we can extract the following features: time of attack, origin of attacker, origin of victim, type of attack and the industry affected.</p>
+</div>
+<div id="motivation" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Motivation<a href="proposal.html#motivation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This project aims to gain a deeper understanding on the cyber incidents listed in the report. Specifically, we will look for methods to group the attacker and victim origin countries (e.g. by continent or GDP per capita) for analysis. At the same time, we will also consider exogenous variables that might affect the frequency or nature of cyber attacks, such as periods coinciding with the Ukraine War and the COVID-19 pandemic etc.</p>
 
 </div>
 </div>
@@ -153,7 +161,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/edit/main/proposal.Rmd",
+"link": "https://github.com/nys98/cybersecurityincidents/edit/main/proposal.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -161,7 +169,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/blob/main/proposal.Rmd",
+"link": "https://github.com/nys98/cybersecurityincidents/blob/main/proposal.Rmd",
 "text": null
 },
 "download": null,
