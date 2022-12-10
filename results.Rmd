@@ -1,1 +1,43 @@
 # Results
+
+```{r libraries}
+library(zoo)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r dataset-read}
+df = read.csv('./data/cybersecurity_incidents_final.csv')
+df = df %>% rename(attacker=country, victim=country.1)
+```
+
+```{r viz-date}
+df$date = as.yearmon(paste(df$year, df$month), "%Y %b")
+ggplot(filter(df, year<=2022), aes(x=date)) +
+  geom_bar()
+```
+
+```{r viz-country}
+# choosing cutoff = 50
+attackers = df %>% group_by(attacker)  %>%
+                    summarise(c = n()) %>% ungroup()
+top_attackers = filter(attackers, c> 50)
+
+# group the remaining data in a new "OTHER" category
+df = df %>% mutate(s = ifelse(attacker %in% top_attackers$attacker, attacker, 'Other'))
+# df$s = df$attacker
+# df$s = as.factor(df$s)
+# levels(df$s) = c(levels(df$s), 'Other')
+# df$s[!(df$s %in% top_attackers)] = 'Other'
+
+# group by attacker origin
+df_attackers_o = df %>% group_by(s)  %>%
+                    summarise(c = n())
+# sort
+df_attackers_o = df_attackers_o %>%
+  arrange(c) %>%
+  mutate(attacker=factor(s, levels=s))
+
+ggplot(df_attackers_o, aes(x=attacker, y=c)) +
+  geom_bar(stat='identity')
+```
