@@ -41,3 +41,42 @@ df_attackers_o = df_attackers_o %>%
 ggplot(df_attackers_o, aes(x=attacker, y=c)) +
   geom_bar(stat='identity')
 ```
+
+
+``` {r cleveland-country}
+# Cleveland dot plot
+ggplot(df_attackers_o, aes(c, reorder(s,c), label = c)) +
+  geom_segment(aes(yend = s), xend = 0, colour = "grey50") +
+  geom_point(col = 'darkblue') +
+  geom_text(size = 2.2, hjust = -0.5, vjust = 0.5) + 
+  theme_bw() +
+  xlab('Count') +
+  ylab('Origin') +
+  ggtitle('Origin of Attack') +
+  theme(panel.grid.major.y = element_blank()) 
+```
+
+```{r viz-victim}
+# choosing cutoff = 30
+victims = df %>% group_by(victim)  %>%
+                    summarise(c2 = n()) %>% ungroup()
+top_victims = filter(victims, c2> 30)
+
+# group the remaining data in a new "OTHER" category
+df = df %>% mutate(s2 = ifelse(victim %in% top_victims$victim, victim, 'Other'))
+# df$s = df$attacker
+# df$s = as.factor(df$s)
+# levels(df$s) = c(levels(df$s), 'Other')
+# df$s[!(df$s %in% top_attackers)] = 'Other'
+
+# group by attacker origin
+df_victims_o = df %>% group_by(s2)  %>%
+                    summarise(c2 = n())
+# sort
+df_victims_o = df_victims_o %>%
+  arrange(c2) %>%
+  mutate(victim=factor(s2, levels=s2))
+
+ggplot(df_victims_o, aes(x=victim, y=c2)) +
+  geom_bar(stat='identity')
+```
