@@ -10,3 +10,6 @@ missing-value-analysis
 results
 interactive-component
 conclusion
+fig:sample-data
+incident-extraction
+nlp-feature-prediction

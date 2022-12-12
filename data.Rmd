@@ -1,8 +1,92 @@
 # Data 
 
+```{r include=FALSE, cache=FALSE}
+library(ggplot2)
+library(dplyr)
+library(redav)
+```
+
 ## Sources
+
+The data originates from the Center for Strategic and International Studies (CSIS), a nonprofit policy research organization that seeks to inform policymakers about pertinent global problems. Of which, cybersecurity has rightfully gained significant attention in today's digital age. 
+
+A list of the most significant cybersecurity incidents from 2003 are provided based on research by the CSIS Strategic Technologies Program. These incidents involve cyber attacks on government agencies, defense and high tech companies, or crimes with over a million dollars in losses. Attacks of such scale usually require significant resources and cyber offensive capabilities, and they can mostly be attributed to the work of nation states. A sample of the transgressions obtained from the report are shown in Figure 3.1.
+
+```{r sample-data, fig.align = 'center', out.width = "90%", fig.cap = "Sample data from CSIS Cybersecurity Incidents Report"}
+knitr::include_graphics(here::here("images", "1_sample_data.jpg"))
+```
+
+The following information can be obtained from each incident:
+
+1. Time of Incident
+2. Hacker Origin
+3. Victim Origin
+4. Type of Hack
+5. Industry Targeted
+
+In some instances, the hacker origin, type of hack or industry targeted are not immediately obvious from the description provided (e.g. second to last incident in Figure 3.1) and will be labeled with "Unknown" in the subsequent data extraction process.
+
 
 ## Cleaning / transformation
 
+Significant efforts have been put into extracting all incidents from the report and labeling each feature based on the description of the hack. These two steps were done in Python for the ease of using established Natural Language Processing (NLP) methods to automate the process. The links to the Jupyter notebooks used in the two steps can be found below:
+
+1. [Incident Extraction](https://github.com/nys98/cybersecurityincidents/blob/main/data_extraction/Cyber_Incidents_Data_Extraction.ipynb)
+2. [NLP Feature Prediction](https://github.com/nys98/cybersecurityincidents/blob/main/data_extraction/BERT_Cyber_Incidents_MultipleChoice_cleaned.ipynb)
+
+### Incident Extraction
+
+Most of the incidents were successfully identified by the set of regular expressions in the notebook. However, a small number of these incidents were either split into two or combined with the previous incident. They were identified by manually inspecting the csv file obtained from running the code in the notebook. 
+
+### NLP Feature Prediction
+
+There are a total of over 900 incidents detailed in the report. Labeling each incident manually with all the features will take a significant amount of time. Instead, a subset of the actual data was labeled and used to train an NLP model to predict each feature for the remaining incidents. 
+
+200 incidents were labeled with the previously identified features. Of which, 150 was used to train and validate the NLP model, with the remaining 50 used to evaluate the performance of the model. Separate sets of model weights were used to predict each feature. The BERT model was trained to predict the best answer from a list of multiple choice options. Each model was trained until it achieved at least 80% accuracy on the hidden evaluation data.
+
+
 ## Missing value analysis
 
+A value is considered missing if it is labeled `Unknown` by the NLP model.
+
+```{r missing-value}
+
+ci_data = read.csv("data/cybersecurity_incidents_final.csv")
+
+ci_data <- rename(ci_data, hacker_origin=country, victim_origin=country.1)
+
+missing_data <- na_if(ci_data[3:ncol(ci_data)], "Unknown") 
+ 
+plot_missing(missing_data)
+
+
+```
+
+The graphs above show that the two columns with the largest number of missing values are `hacker_origin` and `hacktype`, with close to 35% of the rows missing the information. A sample of the incidents with both features missing is shown below:
+
+``` {r missing-ho-and-ht}
+
+m_idx <- which(apply(is.na(missing_data[c(3,5)]), 1, all))
+
+# get a sample of indices with both ho and ht missing
+s_idx <- sample(m_idx, 5)
+
+ci_data[s_idx, 2]
+
+```
+
+It is clear that the descriptions presented in the report do not always reveal the origin of the hacker nor the type of hack that occurred.
+
+A more interesting observation is that a handful of incidents have unknown `victim_origin` in addition to both `hacker_origin` and `hacktype`: 
+
+``` {r missing-three-vars}
+
+m_idx <- which(apply(is.na(missing_data[3:5]), 1, all))
+
+ci_data[m_idx, 2]
+
+```
+
+Palestine was not provided as an option for the NLP model to select from and hence it was not predicted. The second and third incidents involved multiple unspecified countries and the NSA respectively, in which the model was not able to attribute to the US. 
+
+The analysis above show that the reported incidents sometimes lack valuable information on the features of interest. It is important to keep this fact in mind when attempting to visualize the data. 
