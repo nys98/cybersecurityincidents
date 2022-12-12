@@ -23,7 +23,7 @@
 <meta name="author" content="Wei Xiong Toh, Yu Song Ng" />
 
 
-<meta name="date" content="2022-11-01" />
+<meta name="date" content="2022-12-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -82,7 +82,11 @@
 <li class="chapter" data-level="3" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>3</b> Data</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="data.html"><a href="data.html#sources"><i class="fa fa-check"></i><b>3.1</b> Sources</a></li>
-<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a></li>
+<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data.html"><a href="data.html#incident-extraction"><i class="fa fa-check"></i><b>3.2.1</b> Incident Extraction</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data.html"><a href="data.html#nlp-feature-prediction"><i class="fa fa-check"></i><b>3.2.2</b> NLP Feature Prediction</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3" data-path="data.html"><a href="data.html#missing-value-analysis"><i class="fa fa-check"></i><b>3.3</b> Missing value analysis</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a></li>
@@ -111,12 +115,58 @@
 <h1><span class="header-section-number">Chapter 3</span> Data<a href="data.html#data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="sources" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Sources<a href="data.html#sources" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The data originates from the Center for Strategic and International Studies (CSIS), a nonprofit policy research organization that seeks to inform policymakers about pertinent global problems. Of which, cybersecurity has rightfully gained significant attention in today’s digital age.</p>
+<p>A list of the most significant cybersecurity incidents from 2003 are provided based on research by the CSIS Strategic Technologies Program. These incidents involve cyber attacks on government agencies, defense and high tech companies, or crimes with over a million dollars in losses. Attacks of such scale usually require significant resources and cyber offensive capabilities, and they can mostly be attributed to the work of nation states. A sample of the transgressions obtained from the report are shown in Figure 3.1.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:sample-data"></span>
+<img src="images/1_sample_data.JPG" alt="Sample data from CSIS Cybersecurity Incidents Report" width="90%" />
+<p class="caption">
+Figure 3.1: Sample data from CSIS Cybersecurity Incidents Report
+</p>
+</div>
+<p>The following information can be obtained from each incident:</p>
+<ol style="list-style-type: decimal">
+<li>Time of Incident</li>
+<li>Hacker Origin</li>
+<li>Victim Origin</li>
+<li>Type of Hack</li>
+<li>Industry Targeted</li>
+</ol>
+<p>In some instances, the hacker origin, type of hack or industry targeted are not immediately obvious from the description provided (e.g. second to last incident in Figure 3.1) and will be labeled with “Unknown” in the subsequent data extraction process.</p>
 </div>
 <div id="cleaning-transformation" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Cleaning / transformation<a href="data.html#cleaning-transformation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Significant efforts have been put into extracting all incidents from the report and labeling each feature based on the description of the hack. These two steps were done in Python for the ease of using established Natural Language Processing (NLP) methods to automate the process. The links to the Jupyter notebooks used in the two steps can be found below:</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://github.com/nys98/cybersecurityincidents/blob/main/data_extraction/Cyber_Incidents_Data_Extraction.ipynb">Incident Extraction</a></li>
+<li><a href="https://github.com/nys98/cybersecurityincidents/blob/main/data_extraction/BERT_Cyber_Incidents_MultipleChoice_cleaned.ipynb">NLP Feature Prediction</a></li>
+</ol>
+<div id="incident-extraction" class="section level3 hasAnchor" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> Incident Extraction<a href="data.html#incident-extraction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Most of the incidents were successfully identified by the set of regular expressions in the notebook. However, a small number of these incidents were either split into two or combined with the previous incident. They were identified by manually inspecting the csv file obtained from running the code in the notebook.</p>
+</div>
+<div id="nlp-feature-prediction" class="section level3 hasAnchor" number="3.2.2">
+<h3><span class="header-section-number">3.2.2</span> NLP Feature Prediction<a href="data.html#nlp-feature-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>There are a total of over 900 incidents detailed in the report. Labeling each incident manually with all the features will take a significant amount of time. Instead, a subset of the actual data was labeled and used to train an NLP model to predict each feature for the remaining incidents.</p>
+<p>200 incidents were labeled with the previously identified features. Of which, 150 was used to train and validate the NLP model, with the remaining 50 used to evaluate the performance of the model. Separate sets of model weights were used to predict each feature. The BERT model was trained to predict the best answer from a list of multiple choice options. Each model was trained until it achieved at least 80% accuracy on the hidden evaluation data.</p>
+</div>
 </div>
 <div id="missing-value-analysis" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Missing value analysis<a href="data.html#missing-value-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A value is considered missing if it is labeled <code>Unknown</code> by the NLP model.</p>
+<p><img src="finalproj_files/figure-html/missing-value-1.png" width="672" /></p>
+<p>The graphs above show that the two columns with the largest number of missing values are <code>hacker_origin</code> and <code>hacktype</code>, with close to 35% of the rows missing the information. A sample of the incidents with both features missing is shown below:</p>
+<pre><code>## [1] &quot;November 2020 . A group of hackers for hire launched attacks against a group of targets in South Asia, and particularly India, Bangladesh, and Singapore. These attacks included the use of a custom backdoor and crede ntial theft . &quot;                      
+## [2] &quot;August 2016. A group calling itself â\u0080\u009cShadow Brokersâ\u0080\u009d claimed to have penetrated NSA and published a collection of NSA tools on Pastebin. &quot;                                                                                           
+## [3] &quot;June 2020 . A Moroccan journalist wa s targeted by unknown actors who sent him phishing messages that could have been used to download spyware developed by Israeli NSO group &quot;                                                                              
+## [4] &quot;March 2017. Wikileaks released a trove of sophisticated CIA hacking tools dated from 2013 to 2016, claiming that the release reflected several hundred million lines of CIA -developed code. &quot;                                                               
+## [5] &quot;August 2016. Designs and data regarding Indiaâ\u0080\u0099s Scorpene submarines were leaked from the French shipbuilder DCNS. DCNS also builds submarines for Malay sia and Chile, and recently won contracts to build submarines for Brazil and Australia. &quot;</code></pre>
+<p>It is clear that the descriptions presented in the report do not always reveal the origin of the hacker nor the type of hack that occurred.</p>
+<p>A more interesting observation is that a handful of incidents have unknown <code>victim_origin</code> in addition to both <code>hacker_origin</code> and <code>hacktype</code>:</p>
+<pre><code>## [1] &quot;February 2022. Since October 2021, a hacking group targeted Palestinian individuals and organizations with malware. Researchers suggest that the operat ion could be connected to a broader campaign by a hacking group commonly attributed to the cyber arm of Hamas that started in 2017. &quot;
+## [2] &quot;May 2017. A ransomware campaign spread to 99 countries using a vulnerability revealed in the Shadow Brokersâ\u0080\u0099 April 2017 dump of NSA tools. &quot;                                                                                                                                     
+## [3] &quot;April 2017. The Shadow Brokers, the group that claimed to have hacked the NSA in August 2016, released yet another trove of purported NSA hacking tools, in cluding one that suggests the NSA had gained access to SWIFT messages. &quot;</code></pre>
+<p>Palestine was not provided as an option for the NLP model to select from and hence it was not predicted. The second and third incidents involved multiple unspecified countries and the NSA respectively, in which the model was not able to attribute to the US.</p>
+<p>The analysis above show that the reported incidents sometimes lack valuable information on the features of interest. It is important to keep this fact in mind when attempting to visualize the data.</p>
 
 </div>
 </div>
