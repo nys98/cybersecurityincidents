@@ -135,8 +135,8 @@ vc_at_combined %>%
   geom_point() +
   theme_bw() +
   xlab('Number of Attacks') +
-  ylab('Origin Country of Attack') +
-  ggtitle('Origin of Attack') +
+  ylab('Country') +
+  ggtitle('Number of Incidents by Country') +
   theme_linedraw()
 ```
 
