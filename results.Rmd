@@ -15,8 +15,38 @@ df = read.csv('./data/cybersecurity_incidents_final.csv')
 df = df %>% rename(attacker=country, victim=country.1)
 ```
 
+## Temporal Analysis of Cybersecurity Incidents
+
+```{r date-check}
+inc <- filter(df, year > 2022)
+
+dscp <- inc$Description
+
+# update data
+idx <- which(df$year>2022)
+
+df[52,]$year <- 2022
+
+```
+
+
+```{r viz-by-year}
+
+ci_by_year <- count(df, year)
+
+ggplot(ci_by_year, aes(x=year, y=n)) +
+  geom_bar(stat='identity') +
+  ylab("number of incidents")
+
+```
+
+There is a clear upward trend in the number of significant cyber-related incidents around the world over the years. Prior to 2017, the total number of incidents did not exceed fifty per year. Within a short span of three years, this number approximately doubled from 70 in 2017 to 140 in 2020. In 2021, the number of recorded incidents bucked the trend and fell by over 50 cases from 2020. This could be because of the increased awareness of the importance of good cyber hygiene with additional resources and measures to strengthen cybersecurity globally. 
+
+Note that the data for 2022 consists of incidents from January to September 2022. This value has also marginally surpassed three quarters of the total number of incidents in 2021. This could mean that the peak in 2020 was an anomaly, but still gives credence to the rising trend in number of cybersecurity incidents worldwide.
+
 ```{r viz-date}
 df$date = as.yearmon(paste(df$year, df$month), "%Y %b")
+
 df = filter(df, year<=2022)
 df = df %>% drop_na(date)
 datecounts = df %>% group_by(date,year) %>% summarize(count=n()) %>% arrange(date) %>% ungroup() %>%
@@ -29,12 +59,10 @@ ggplot(datecounts, aes(date,count)) +
   geom_point(data=filter(datecounts, count > 20|(year<2015&count>9)),
              pch=21,
              size=4,
-             colour="red") 
+             colour="red")
 ```
-<p>
-From the bar plot, we can see that the number of attacks has increased over time. This makes sense, as the advance of technology makes it easier and more lucrative for both individuals and governments to launch cyber attacks.
-There are also unusually high peaks in attacks, both in May 2013 and October 2020. October 2020 was the leadup to the 2020 US Presidential Elections, so that might be a reason for the spike in cyberattacks. May 2013 is less clear, so further analysis of the data might shed some light.
-</p>
+
+From the line graph, there are also unusually high peaks in the number of incidents, both in May 2013 and October 2020. The 2020 US Presidential Elections were held in November, so that might be a reason for the spike in cyberattacks a month prior. 
 
 ```{r october-2020}
 oct = df %>% filter(date=='October 2020') %>% group_by(victim) %>% summarise(Freq=n())%>%ungroup()
@@ -56,15 +84,16 @@ ggplot(oct, aes(reorder(victim, -Freq),Freq))+
   ylab("Count")
 ```
 
-<p>
-From the bar plot, October 2020 has a rather high number of attacks on the United States. There might be some correlation with the Presidential Elections of 2020. On the other hand, the victims in May 2013 seem quite spread out, so it is unclear if there may be any patterns there.
-</p>
+From the bar plot, October 2020 has a rather high number of attacks against the United States. There might be some correlation with the Presidential Elections of 2020. On the other hand, the victims in May 2013 seem quite spread out, so it is unlikely that any single major world event caused the spike in number of incidents.
+
+
+## Hacker and Victim Analysis
 
 ```{r viz-country}
 # choosing cutoff = 75
 attackers = df %>% group_by(attacker)  %>%
                     summarise(attacker_count = n()) %>% ungroup()
-top_attackers = filter(attackers, attacker_count> 75)
+top_attackers = filter(attackers, attacker_count > 75)
 
 # group the remaining data in a new "OTHER" category
 df = df %>% mutate(attacker_w_other_grp = ifelse(attacker %in% top_attackers$attacker, attacker, 'Other'))
@@ -83,39 +112,51 @@ ggplot(df_attackers_o, aes(x=reorder(attacker,-attacker_count), y=attacker_count
   ylab('Number of Attacks') +
   xlab('Origin Country of Attack')
 ```
-<p>
-Using a reasonable cutoff, we can see the major attackers over the years. The majority of attacks are from unknown sources, which makes sense as there are numerous private organizations and individuals that carry out cyberattacks. Following which, the next biggest governments who carry out attacks are China, Russia and Iran. The aggregated attacks carried out by other governments fall between the number of Russian and Iranian attacks. These statistics seem to be in line with the reports of Western media.
-</p>
 
-``` {r cleveland-country}
+Using a reasonable cutoff, we can see the major attackers over the years. The majority of attacks are from unknown sources, which makes sense as there are numerous private organizations and individuals that carry out cyberattacks. Following which, the next biggest governments who carry out attacks are China, Russia and Iran. The aggregated attacks carried out by other governments fall between the number of Russian and Iranian attacks. These statistics seem to be in line with the reports of Western media.
+
+
+``` {r cleveland-country-both}
+
+attackers = df %>% group_by(attacker)  %>%
+                    summarise(attack_ct = n()) %>% ungroup() %>% 
+                    rename(country=attacker)
+victims = df %>% group_by(victim)  %>%
+                    summarise(victim_ct = n()) %>% ungroup() %>%
+                    rename(country=victim)
+
+vc_at_combined <- merge(attackers, victims)
+
+
 # Cleveland dot plot
-ggplot(df_attackers_o, aes(attacker_count, reorder(attacker_w_other_grp,attacker_count), label = attacker_count)) +
-  geom_segment(aes(yend = attacker_w_other_grp), xend = 0, colour = "grey50") +
-  geom_point(col = 'darkblue') +
-  geom_text(size = 2.2, hjust = -0.5, vjust = 0.5) + 
+vc_at_combined %>% 
+  gather(key='type',value='count',attack_ct,victim_ct) %>% 
+  ggplot(aes(x=count, y=fct_reorder2(country,type=='attack_ct',count,.desc=FALSE), colour=type)) +
+  geom_point() +
   theme_bw() +
   xlab('Number of Attacks') +
   ylab('Origin Country of Attack') +
   ggtitle('Origin of Attack') +
-  theme(panel.grid.major.y = element_blank()) 
+  theme_linedraw()
 ```
 
-<p>
+
 The same data can be represented with a Cleveland Dot Plot as well.
-</p>
+
 
 ```{r viz-victim}
 # choosing cutoff = 30
 victims = df %>% group_by(victim)  %>%
                     summarise(victim_count = n()) %>% ungroup()
-top_victims = filter(victims, victim_count> 30)
+
+top_victims = filter(victims, victim_count > 30)
 
 # group the remaining data in a new "OTHER" category
 df = df %>% mutate(victim_w_other_grp = ifelse(victim %in% top_victims$victim, victim, 'Other'))
 
 # group by attacker origin
 df_victims_o = df %>% group_by(victim_w_other_grp)  %>%
-                    summarise(victim_count = n())
+                    summarise(victim_count = n()) %>% ungroup()
 # sort
 df_victims_o = df_victims_o %>%
   arrange(victim_count) %>%
@@ -128,21 +169,39 @@ ggplot(df_victims_o, aes(x=reorder(victim, -victim_count), victim_count)) +
   ggtitle("Victims of Attack")
 ```
 
-<p>
+
+``` {r cleveland-country}
+# # Cleveland dot plot
+# ggplot(df_attackers_o, aes(attacker_count, reorder(attacker_w_other_grp,attacker_count), label = attacker_count)) +
+#   geom_segment(aes(yend = attacker_w_other_grp), xend = 0, colour = "grey50") +
+#   geom_point(col = 'darkblue') +
+#   geom_text(size = 2.2, hjust = -0.5, vjust = 0.5) + 
+#   theme_bw() +
+#   xlab('Number of Attacks') +
+#   ylab('Origin Country of Attack') +
+#   ggtitle('Origin of Attack') +
+#   theme(panel.grid.major.y = element_blank()) 
+```
+
 Using a reasonable cutoff, we can see the major victims over the years. We can see that the majority of attacks are on the "Other" category of countries, suggesting that cyberattacks are relatively spread out across many countries. Still, the next highest number is the United States, followed by a sharp drop in number for unknown victims (non-country specific) followed by other individual countries such as India, Iran, the UK, Israel, Ukraine and China.
-</p>
+
+
+## Type of Cyber Attack
+
 
 ``` {r hacktype-viz}
 ggplot(df%>%group_by(hacktype)%>%summarize(hacktype_count=n()), aes(x=reorder(hacktype,-hacktype_count),y=hacktype_count)) +
   geom_bar(stat='identity') +
   xlab('Type of Attack')+
   ylab('Number of Attacks') +
-  ggtitle('Graph of type of attacks carried out')
+  ggtitle('Graph of type of attacks carried out') +
+  theme(axis.text=element_text(size=8))
+
 ```
 
-<p>
-This graph shows the types of attacks carried out. Most are unknown, after which data exfiltration and malware are the next most common. 
-</p>
+
+This graph shows the types of attacks carried out. Most are unknown, after which data exfiltration and malware are the next most common.
+
 
 ``` {r hacktype-othertype}
 # choosing cutoff = 100
@@ -155,7 +214,7 @@ df = df %>% mutate(hacktype_w_other_grp = ifelse(hacktype %in% top_hacktypes$hac
 
 # group by attacker origin
 df_hacktypes_o = df %>% group_by(hacktype_w_other_grp)  %>%
-                    summarise(hacktype_count = n())
+                    summarise(hacktype_count = n()) %>%  ungroup()
 # sort
 df_hacktypes_o = df_hacktypes_o %>%
   arrange(hacktype_count) %>%
@@ -173,41 +232,52 @@ df = df %>% mutate(victim_w_other_grp = ifelse(victim %in% top_victims$victim, v
 
 # group by attacker origin
 df_victims_o = df %>% group_by(victim_w_other_grp)  %>%
-                    summarise(victim_count = n())
+                    summarise(victim_count = n()) %>%  ungroup()
 # sort
 df_victims_o = df_victims_o %>%
   arrange(victim_count) %>%
   mutate(victim=factor(victim_w_other_grp, levels=victim_w_other_grp))
 ```
 
-<p>
+
+
 Next, we try to categorize the victims and atack types into fewer categories, and apply an alluvial diagram between the combination of attacker, hacktype and victim to see if there are any patterns that can be identified.
-</p>
+
 
 ``` {r attacker-hacktype-victim-alluvial}
-attackervictimgrp = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp,victim_w_other_grp)%>%summarize(Freq=n())%>%ungroup()
-ggplot(attackervictimgrp, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp,axis3=victim_w_other_grp, y=Freq))+
+attackervictimgrp = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp,victim_w_other_grp) %>% 
+  summarize(Freq=n()) %>%
+  ungroup()
+
+ggplot(attackervictimgrp, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp,axis3=victim_w_other_grp, y=Freq)) +
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
   scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp","victim_w_other_grp"))
 ```
-<p>
+
 The chart is messy and has too many groups, which makes it hard to see any patterns. Try with geom_flow.
-</p>
+
 
 ``` {r attacker-hacktype-victim-flow}
-attackervictimgrp = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp,victim_w_other_grp)%>%summarize(Freq=n())%>%ungroup()
-ggplot(attackervictimgrp, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp,axis3=victim_w_other_grp, y=Freq))+
+attackervictimgrp = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp,victim_w_other_grp)%>%
+  summarize(Freq=n()) %>% 
+  ungroup()
+
+ggplot(attackervictimgrp, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp,axis3=victim_w_other_grp, y=Freq)) +
   geom_flow(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
   scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp","victim_w_other_grp"))
 ```
 
+
 ``` {r attacker-hacktype-alluvial}
-tempdf = df%>%group_by(attacker_w_other_grp,hacktype_w_other_grp)%>%summarize(Freq=n())%>%ungroup()
-ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp, y=Freq))+
+tempdf = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp) %>% 
+  summarize(Freq=n()) %>% 
+  ungroup()
+
+ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp, y=Freq)) +
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
@@ -215,8 +285,11 @@ ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp, y=Freq
 ```
 
 ``` {r attacker-victim-alluvial}
-tempdf = df%>%group_by(attacker_w_other_grp,victim_w_other_grp)%>%summarize(Freq=n())%>%ungroup()
-ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=victim_w_other_grp, y=Freq))+
+tempdf = df %>% group_by(attacker_w_other_grp,victim_w_other_grp) %>% 
+  summarize(Freq=n()) %>% 
+  ungroup()
+
+ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=victim_w_other_grp, y=Freq)) +
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
@@ -224,24 +297,34 @@ ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=victim_w_other_grp, y=Freq))
 ```
 
 ``` {r hacktype-victim-alluvial}
-tempdf = df%>%group_by(hacktype_w_other_grp,victim_w_other_grp)%>%summarize(Freq=n())%>%ungroup()
-ggplot(tempdf, aes(axis1=hacktype_w_other_grp,axis2=victim_w_other_grp, y=Freq))+
+tempdf = df %>% group_by(hacktype_w_other_grp,victim_w_other_grp) %>% 
+  summarize(Freq=n()) %>% 
+  ungroup()
+
+ggplot(tempdf, aes(axis1=hacktype_w_other_grp,axis2=victim_w_other_grp, y=Freq)) +
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
   scale_x_discrete(limits=c("hacktype_w_other_grp","victim_w_other_grp"))
 ```
 
+
+## Targeted Industries
+
 ```{r industry}
-industry = df %>% group_by(industry) %>%summarize(count=n())%>%ungroup()
+industry = df %>% group_by(industry) %>% 
+  summarize(count=n()) %>% 
+  ungroup()
+
 ggplot(industry, aes(reorder(industry,-count),count)) +
   geom_bar(stat='identity')+
   ggtitle("Industry Attacked") +
   xlab("Industry") +
-  ylab("Number of Attacks")
+  ylab("Number of Attacks") +
+  theme(axis.text=element_text(size=5))
 
 ```
 
-<p>
+
 Finally, when we look at the industries targeted, the largest number are on governments followed by defence. This makes sense, as they have strategic or political significance. 
-</p>
+

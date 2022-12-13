@@ -13,3 +13,7 @@ conclusion
 fig:sample-data
 incident-extraction
 nlp-feature-prediction
+temporal-analysis-of-cybersecurity-incidents
+hacker-and-victim-analysis
+targeted-industries
+type-of-cyber-attack
