@@ -254,10 +254,10 @@ df_victims_o = df_victims_o %>%
 
 
 
-Next, we try to categorize the victims and attack types into fewer categories, and apply an alluvial diagram between the combination of attacker, hacktype and victim to see if there are any patterns that can be identified.
+Next, we try to categorize the victims and attack types into fewer categories, and apply an alluvial diagram between the combination of attacker, hacktype and victim to see if there are any patterns that can be identified. The rationale to use an alluvial diagram is that a cybersecurity incident could be viewed as a chronological flow, where the idea of attacking originates from a source country (attacker), moves to the specific type of attack, then flows to a victim country. 
 
 
-``` {r attacker-hacktype-victim-alluvial}
+``` {r attacker-hacktype-victim-alluvial, fig.width = 9, fig.height = 7 }
 attackervictimgrp = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp,victim_w_other_grp) %>% 
   summarize(Freq=n()) %>%
   ungroup()
@@ -266,13 +266,14 @@ ggplot(attackervictimgrp, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
-  scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp","victim_w_other_grp"))
+  scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp","victim_w_other_grp"))+
+  ggtitle('Alluvial diagram of cyberattacks')
 ```
 
-The chart is messy and has too many groups, which makes it hard to see any patterns. Try with geom_flow.
+The chart is messy and has too many groups, which makes it hard to see any patterns. We can try with geom_flow, but most likely it would be better to do a pairwise comparison.
 
 
-``` {r attacker-hacktype-victim-flow}
+``` {r attacker-hacktype-victim-flow, fig.width = 9, fig.height = 7 }
 attackervictimgrp = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp,victim_w_other_grp)%>%
   summarize(Freq=n()) %>% 
   ungroup()
@@ -281,11 +282,13 @@ ggplot(attackervictimgrp, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_
   geom_flow(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
-  scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp","victim_w_other_grp"))
+  scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp","victim_w_other_grp"))+
+  ggtitle('Flow diagram of cyberattacks')
 ```
 
 
-``` {r attacker-hacktype-alluvial}
+
+``` {r attacker-hacktype-alluvial, fig.width = 9, fig.height = 7 }
 tempdf = df %>% group_by(attacker_w_other_grp,hacktype_w_other_grp) %>% 
   summarize(Freq=n()) %>% 
   ungroup()
@@ -294,10 +297,13 @@ ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=hacktype_w_other_grp, y=Freq
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
-  scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp"))
+  scale_x_discrete(limits=c("attacker_w_other_grp","hacktype_w_other_grp"))+
+  ggtitle('Alluvial diagram of attacker and hacktype')
 ```
 
-``` {r attacker-victim-alluvial}
+The alluvial diagram for hacktype and attacker seems to show some differences in choice of attack for different countries. Iran, North Korea, Others and Unknown origin seem to choose attack types that are rather similar to the overall proportion of attack types (i.e. most of their attack types are unknown, followed by data exfiltration, other, and malware). However, the largest source of cyberattacks, China, heavily favors data exfiltration. On the other hand, Russia has a large percentage of Unknown and Other types of hacktypes, and a very small proportion of data exfiltration in comparison.
+
+``` {r attacker-victim-alluvial, fig.width = 9, fig.height = 7 }
 tempdf = df %>% group_by(attacker_w_other_grp,victim_w_other_grp) %>% 
   summarize(Freq=n()) %>% 
   ungroup()
@@ -306,10 +312,13 @@ ggplot(tempdf, aes(axis1=attacker_w_other_grp,axis2=victim_w_other_grp, y=Freq))
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
-  scale_x_discrete(limits=c("attacker_w_other_grp","victim_w_other_grp"))
+  scale_x_discrete(limits=c("attacker_w_other_grp","victim_w_other_grp"))+
+  ggtitle('Alluvial diagram from attacker to victim country')
 ```
 
-``` {r hacktype-victim-alluvial}
+Most of the flows from attacker to victim seem to be in line with the overall proportion, but China and Unknown attackers seem to have a slightly higher chance of targeting the United States.
+
+``` {r hacktype-victim-alluvial, fig.width = 9, fig.height = 7 }
 tempdf = df %>% group_by(hacktype_w_other_grp,victim_w_other_grp) %>% 
   summarize(Freq=n()) %>% 
   ungroup()
@@ -318,9 +327,11 @@ ggplot(tempdf, aes(axis1=hacktype_w_other_grp,axis2=victim_w_other_grp, y=Freq))
   geom_alluvium(color='black') +
   geom_stratum() +
   geom_text(stat='stratum', aes(label=paste(after_stat(stratum),"\n",after_stat(count))))+
-  scale_x_discrete(limits=c("hacktype_w_other_grp","victim_w_other_grp"))
+  scale_x_discrete(limits=c("hacktype_w_other_grp","victim_w_other_grp"))+
+  ggtitle('Alluvial diagram of hacktype and victim')
 ```
 
+Finally, the hacktype to victim alluvial diagram shows a roughly equal spread of each attack type targeting the victim countries, but data exfiltration seems to appear slightly more for the United States.
 
 ## Targeted Industries
 
