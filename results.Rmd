@@ -13,6 +13,12 @@ library(tidyr)
 ```{r dataset-read}
 df = read.csv('./data/cybersecurity_incidents_final.csv')
 df = df %>% rename(attacker=country, victim=country.1)
+df = df %>% mutate(
+  attacker = str_replace(attacker, "Korea, North", "North Korea"),
+  victim = str_replace(victim, "Korea, North", "North Korea"),
+  attacker = str_replace(attacker, "Korea, South", "South Korea"),
+  victim = str_replace(victim, "Korea, South", "South Korea")
+)
 ```
 
 ## Temporal Analysis of Cybersecurity Incidents
@@ -62,7 +68,7 @@ ggplot(datecounts, aes(date,count)) +
              colour="red")
 ```
 
-From the line graph, there are also unusually high peaks in the number of incidents, both in May 2013 and October 2020. The 2020 US Presidential Elections were held in November, so that might be a reason for the spike in cyberattacks a month prior. 
+From the line graph, there are also unusually high peaks in the number of incidents, both in May 2013 and October 2020. 
 
 ```{r october-2020}
 oct = df %>% filter(date=='October 2020') %>% group_by(victim) %>% summarise(Freq=n())%>%ungroup()
@@ -71,8 +77,10 @@ ggplot(oct, aes(reorder(victim, -Freq),Freq))+
   geom_bar(stat="identity")+
   ggtitle("Victims of Cyberattacks in October 2020")+
   xlab("Victim")+
-  ylab("Count")
+  ylab("Count") +
+  theme(axis.text=element_text(size=8))
 ```
+
 
 ```{r may-2013}
 oct = df %>% filter(date=='May 2013') %>% group_by(victim) %>% summarise(Freq=n())%>%ungroup()
@@ -84,16 +92,17 @@ ggplot(oct, aes(reorder(victim, -Freq),Freq))+
   ylab("Count")
 ```
 
-From the bar plot, October 2020 has a rather high number of attacks against the United States. There might be some correlation with the Presidential Elections of 2020. On the other hand, the victims in May 2013 seem quite spread out, so it is unlikely that any single major world event caused the spike in number of incidents.
+From the bar plot, October 2020 has a rather high number of attacks against the United States. There might be some correlation with the Presidential Elections of 2020. On the other hand, the attacks in May 2013 were not disproportionately directed towards any particular country, so it is unlikely that any single major world event caused the spike in number of incidents. 
 
 
 ## Hacker and Victim Analysis
 
 ```{r viz-country}
-# choosing cutoff = 75
+# choosing cutoff = 50
+att_cutoff = 50
 attackers = df %>% group_by(attacker)  %>%
                     summarise(attacker_count = n()) %>% ungroup()
-top_attackers = filter(attackers, attacker_count > 75)
+top_attackers = filter(attackers, attacker_count > att_cutoff)
 
 # group the remaining data in a new "OTHER" category
 df = df %>% mutate(attacker_w_other_grp = ifelse(attacker %in% top_attackers$attacker, attacker, 'Other'))
@@ -113,43 +122,15 @@ ggplot(df_attackers_o, aes(x=reorder(attacker,-attacker_count), y=attacker_count
   xlab('Origin Country of Attack')
 ```
 
-Using a reasonable cutoff, we can see the major attackers over the years. The majority of attacks are from unknown sources, which makes sense as there are numerous private organizations and individuals that carry out cyberattacks. Following which, the next biggest governments who carry out attacks are China, Russia and Iran. The aggregated attacks carried out by other governments fall between the number of Russian and Iranian attacks. These statistics seem to be in line with the reports of Western media.
-
-
-``` {r cleveland-country-both}
-
-attackers = df %>% group_by(attacker)  %>%
-                    summarise(attack_ct = n()) %>% ungroup() %>% 
-                    rename(country=attacker)
-victims = df %>% group_by(victim)  %>%
-                    summarise(victim_ct = n()) %>% ungroup() %>%
-                    rename(country=victim)
-
-vc_at_combined <- merge(attackers, victims)
-
-
-# Cleveland dot plot
-vc_at_combined %>% 
-  gather(key='type',value='count',attack_ct,victim_ct) %>% 
-  ggplot(aes(x=count, y=fct_reorder2(country,type=='attack_ct',count,.desc=FALSE), colour=type)) +
-  geom_point() +
-  theme_bw() +
-  xlab('Number of Attacks') +
-  ylab('Country') +
-  ggtitle('Number of Incidents by Country') +
-  theme_linedraw()
-```
-
-
-The same data can be represented with a Cleveland Dot Plot as well.
+Using a reasonable cutoff = 50, we can see the major attackers over the years. The majority of attacks were from unknown sources, which makes sense as there are numerous private organizations and individuals that carry out cyberattacks. Following which, cyberattacks were attributed to China, Russia, Iran and North Korea in decreasing number of incidents. The aggregated attacks carried out by other governments fall between the number of Iranian and North Korean attacks. These statistics seem to be in line with the reports of Western media.
 
 
 ```{r viz-victim}
-# choosing cutoff = 30
+vic_cutoff = 30
 victims = df %>% group_by(victim)  %>%
                     summarise(victim_count = n()) %>% ungroup()
 
-top_victims = filter(victims, victim_count > 30)
+top_victims = filter(victims, victim_count > vic_cutoff)
 
 # group the remaining data in a new "OTHER" category
 df = df %>% mutate(victim_w_other_grp = ifelse(victim %in% top_victims$victim, victim, 'Other'))
@@ -170,6 +151,9 @@ ggplot(df_victims_o, aes(x=reorder(victim, -victim_count), victim_count)) +
 ```
 
 
+Using a reasonable cutoff = 30, we can see the major victims over the years. We can see that the majority of attacks are on the "Other" category of countries, suggesting that cyberattacks are relatively spread out across many countries. Still, the next highest number is the United States, followed by a sharp drop in number for unknown victims (non-country specific) followed by other individual countries such as India, Iran, the UK, Israel, Ukraine and China.
+
+
 ``` {r cleveland-country}
 # # Cleveland dot plot
 # ggplot(df_attackers_o, aes(attacker_count, reorder(attacker_w_other_grp,attacker_count), label = attacker_count)) +
@@ -183,7 +167,36 @@ ggplot(df_victims_o, aes(x=reorder(victim, -victim_count), victim_count)) +
 #   theme(panel.grid.major.y = element_blank()) 
 ```
 
-Using a reasonable cutoff, we can see the major victims over the years. We can see that the majority of attacks are on the "Other" category of countries, suggesting that cyberattacks are relatively spread out across many countries. Still, the next highest number is the United States, followed by a sharp drop in number for unknown victims (non-country specific) followed by other individual countries such as India, Iran, the UK, Israel, Ukraine and China.
+``` {r cleveland-country-both}
+
+attackers = df %>% group_by(attacker)  %>%
+                    summarise(attack_ct = n()) %>% ungroup() %>% 
+                    rename(country=attacker)
+victims = df %>% group_by(victim)  %>%
+                    summarise(victim_ct = n()) %>% ungroup() %>%
+                    rename(country=victim)
+
+vc_at_combined <- merge(attackers, victims, all=TRUE)
+vc_at_combined[is.na(vc_at_combined)] <- 0
+
+
+# Cleveland dot plot
+num_countries = 15  # to display
+
+vc_at_combined %>% 
+  slice_max(., n=num_countries, order_by=attack_ct) %>% 
+  gather(key='type',value='count',attack_ct,victim_ct) %>% 
+  ggplot(aes(x=count, y=fct_reorder2(country,type=='attack_ct',count,.desc=FALSE), colour=type)) +
+  geom_point() +
+  theme_bw() +
+  xlab('Number of Attacks') +
+  ylab('Country') +
+  ggtitle('Number of Incidents by Country') +
+  theme_linedraw()
+```
+
+
+The same data obtained previously can be represented with a Cleveland Dot Plot as shown above. By combining the total number of times each country was on the offensive and the number of times each country was hacked on the above plot, it is clear that some countries like China, Russia and Iran are more proactive in directing cyberattacks with many more attacks originating from them than against them while others like the United States and India orchestrated much fewer number of attacks vis-a-vis the number of times they were victims of these hacks. 
 
 
 ## Type of Cyber Attack
@@ -241,7 +254,7 @@ df_victims_o = df_victims_o %>%
 
 
 
-Next, we try to categorize the victims and atack types into fewer categories, and apply an alluvial diagram between the combination of attacker, hacktype and victim to see if there are any patterns that can be identified.
+Next, we try to categorize the victims and attack types into fewer categories, and apply an alluvial diagram between the combination of attacker, hacktype and victim to see if there are any patterns that can be identified.
 
 
 ``` {r attacker-hacktype-victim-alluvial}
@@ -326,5 +339,7 @@ ggplot(industry, aes(reorder(industry,-count),count)) +
 ```
 
 
-Finally, when we look at the industries targeted, the largest number are on governments followed by defence. This makes sense, as they have strategic or political significance. 
+Finally, when we look at the industries targeted, the largest number of incidents target governments followed by defense. This fact suggests that majority of cyber incidents are politically motivated. On a global scale, governments have to strengthen their policies and technical abilities in order to protect their digital assets from malicious actors. 
+
+There were over 50 incidents that involved companies in the finance industry, which shows that cyber criminals are also driven to hack others due to potential financial gains. 
 
