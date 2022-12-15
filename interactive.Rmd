@@ -1,7 +1,6 @@
 # Interactive component
 
-```{r , include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include=FALSE}
 library(httr)
 library(stringr)
 library(leaflet)
@@ -13,7 +12,88 @@ library(ggalluvial)
 library(tidyverse)
 library(knitr)
 library(tidyr)
+library(r2d3)
 ```
+
+```{r process-data}
+
+df = read.csv('./data/cybersecurity_incidents_final.csv')
+df = df %>% rename(attacker=country, victim=country.1)
+df = df %>% mutate(
+  attacker = str_replace(attacker, "Korea, North", "North Korea"),
+  victim = str_replace(victim, "Korea, North", "North Korea"),
+  attacker = str_replace(attacker, "Korea, South", "South Korea"),
+  victim = str_replace(victim, "Korea, South", "South Korea")
+)
+
+inc <- filter(df, year > 2022)
+
+dscp <- inc$Description
+
+# update data
+idx <- which(df$year>2022)
+
+df[52,]$year <- 2022
+
+```
+
+## Attack Origin Bar Plot
+```{r attacker_info}
+
+# choosing cutoff = 50
+att_cutoff = 50
+attackers = df %>% group_by(attacker)  %>%
+                    summarise(attacker_count = n()) %>% ungroup()
+top_attackers = filter(attackers, attacker_count > att_cutoff)
+
+# group the remaining data in a new "OTHER" category
+df = df %>% mutate(attacker_w_other_grp = ifelse(attacker %in% top_attackers$attacker, attacker, 'Other'))
+
+# group by attacker origin
+df_attackers_o = df %>% group_by(attacker_w_other_grp)  %>%
+                    summarise(attacker_count = n())
+# sort
+df_attackers_o = df_attackers_o %>%
+  arrange(-attacker_count)
+
+df_attackers_o <- rename(df_attackers_o, value=attacker_count, country=attacker_w_other_grp)
+```
+
+
+
+```{r d3attackers}
+r2d3(data=df_attackers_o, script = "barchart.js")
+```
+
+
+## Victim Origin Bar Plot
+```{r victim_info}
+
+vic_cutoff = 30
+victims = df %>% group_by(victim)  %>%
+                    summarise(victim_count = n()) %>% ungroup()
+
+top_victims = filter(victims, victim_count > vic_cutoff)
+
+# group the remaining data in a new "OTHER" category
+df = df %>% mutate(victim_w_other_grp = ifelse(victim %in% top_victims$victim, victim, 'Other'))
+
+# group by attacker origin
+df_victims_o = df %>% group_by(victim_w_other_grp)  %>%
+                    summarise(victim_count = n()) %>% ungroup()
+# sort
+df_victims_o = df_victims_o %>%
+  arrange(-victim_count)
+
+df_victims_o <- rename(df_victims_o, value=victim_count, country=victim_w_other_grp)
+
+```
+
+
+```{r d3victims}
+r2d3(data=df_victims_o, script = "barchart.js")
+```
+
 
 
 ``` {r get-coords-function}
@@ -164,26 +244,8 @@ get_coords <- function(input_list, input_vals, input_type, input_ll_type, granul
 }
 ```
 
-```{r process-data}
 
-df = read.csv('./data/cybersecurity_incidents_final.csv')
-df = df %>% rename(attacker=country, victim=country.1)
-df = df %>% mutate(
-  attacker = str_replace(attacker, "Korea, North", "North Korea"),
-  victim = str_replace(victim, "Korea, North", "North Korea"),
-  attacker = str_replace(attacker, "Korea, South", "South Korea"),
-  victim = str_replace(victim, "Korea, South", "South Korea")
-)
-
-inc <- filter(df, year > 2022)
-
-dscp <- inc$Description
-
-# update data
-idx <- which(df$year>2022)
-
-df[52,]$year <- 2022
-
+```{r data-vic-att-comb}
 attackers = df %>% group_by(attacker)  %>%
                     summarise(attack_ct = n()) %>% ungroup() %>% 
                     rename(country=attacker)
@@ -197,20 +259,54 @@ vc_at_combined[is.na(vc_at_combined)] <- 0
 ```
 
 
+## Geospatial Attacker Origin Plot Top 5
+```{r attack-plot}
+attack_count <- vc_at_combined[c('country', 'attack_ct')]
+attack_count[is.na(attack_count)] <- 0
 
-```{r victim-plot}
-victims_count <- vc_at_combined[c('country', 'victim_ct')]
-victims_count[is.na(victims_count)] <- 0
+attack_count <- attack_count %>% arrange(-attack_ct)
 
-gran <- 50
-mpoly_sf <- get_coords(victims_count$country[1:2], victims_count$victim_ct[1:2], 'Country', 'poly', gran)
+start_idx <- 2
+num_plot <- 5
+gran <- 75
+mpoly_sf_att <- get_coords(attack_count$country[start_idx:(start_idx+num_plot)], attack_count$attack_ct[start_idx:(start_idx+num_plot)], 'Country', 'poly', gran)
 
 input_colorP <- "YlOrRd"
 
-leaflet(mpoly_sf) %>% 
+leaflet(mpoly_sf_att) %>% 
     addTiles() %>%
     addPolygons(
       fillOpacity = 1, smoothFactor = 0.75,
       color=~colorNumeric(input_colorP, val)(val)
     )
 ```
+
+
+## Geospatial Victim Origin Plot Top 5
+```{r victim-plot}
+victims_count <- vc_at_combined[c('country', 'victim_ct')]
+victims_count[is.na(victims_count)] <- 0
+
+victims_count <- victims_count %>% arrange(-victim_ct)
+
+num_plot <- 5
+gran <- 100
+mpoly_sf_vic <- get_coords(victims_count$country[1:num_plot], victims_count$victim_ct[1:num_plot], 'Country', 'poly', gran)
+
+input_colorP <- "YlOrRd"
+
+leaflet(mpoly_sf_vic) %>% 
+    addTiles() %>%
+    addPolygons(
+      fillOpacity = 1, smoothFactor = 0.75,
+      color=~colorNumeric(input_colorP, val)(val)
+    )
+```
+
+## Future Work
+
+Features to include in future:
+
+1. button to vary number of countries displayed
+2. button to change color scale
+3. sliding scale to change number of bars in bar plot
