@@ -1,5 +1,7 @@
 # Conclusion
 
+## Summary
+
 In conclusion, there is a lot of data we can visualize from this report of cybersecurity incidents. We extracted the date of attack, attacker, victim, hacktype and industry using natural language processing (NLP).
 
 We were able to see the general increasing trend of attacks from 2003 to 2022, and identify some months where cyberattack activity peaked (May 2013 and October 2020). Next, we explored the attack origin and victim countries, and found that the single countries where most attacks originated from were China, Russia and Iran, whereas the most targeted country for cyberattacks was the United States. We also noted that the type of attacks used were mostly unknown, followed by data exfiltration and malware.
@@ -7,6 +9,8 @@ We were able to see the general increasing trend of attacks from 2003 to 2022, a
 To see how the cyberattacks flowed from source to victim, we attempted to visualize with alluvial diagrams, which gave some information on the differences in proportion for the different types of cyberattacks.
 
 Finally, we looked at the industries targeted and found out that government organizations were highly targeted, followed by defense and energy.
+
+## Limitations
 
 The main limitation of this project was the format of our data, which made it slightly difficult for the NLP algorithm to extract information sometimes. This may have caused some inaccuracies for certain data points, and some information may have been lost as well.
 
