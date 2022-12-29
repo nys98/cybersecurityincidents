@@ -23,7 +23,7 @@
 <meta name="author" content="Wei Xiong Toh, Yu Song Ng" />
 
 
-<meta name="date" content="2022-11-01" />
+<meta name="date" content="2022-12-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,6 +52,18 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/r2d3-render-0.1.0/r2d3-render.js"></script>
+<script src="libs/webcomponents-2.0.0/webcomponents.js"></script>
+<script src="libs/r2d3-binding-0.2.6/r2d3.js"></script>
+<script src="libs/d3v6-6.2.0/d3.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.1.1/leaflet.js"></script>
 
 
 
@@ -72,22 +84,48 @@
 <li><a href="./">cybersec incidents</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#research-topic"><i class="fa fa-check"></i><b>1.1</b> Research topic</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#data-availability"><i class="fa fa-check"></i><b>1.2</b> Data availability</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#motivation"><i class="fa fa-check"></i><b>1.3</b> Motivation</a></li>
+</ul></li>
 <li class="chapter" data-level="2" data-path="proposal.html"><a href="proposal.html"><i class="fa fa-check"></i><b>2</b> Proposal</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="proposal.html"><a href="proposal.html#research-topic"><i class="fa fa-check"></i><b>2.1</b> Research topic</a></li>
-<li class="chapter" data-level="2.2" data-path="proposal.html"><a href="proposal.html#data-availability"><i class="fa fa-check"></i><b>2.2</b> Data availability</a></li>
-<li class="chapter" data-level="2.3" data-path="proposal.html"><a href="proposal.html#motivation"><i class="fa fa-check"></i><b>2.3</b> Motivation</a></li>
+<li class="chapter" data-level="2.1" data-path="proposal.html"><a href="proposal.html#research-topic-1"><i class="fa fa-check"></i><b>2.1</b> Research topic</a></li>
+<li class="chapter" data-level="2.2" data-path="proposal.html"><a href="proposal.html#data-availability-1"><i class="fa fa-check"></i><b>2.2</b> Data availability</a></li>
+<li class="chapter" data-level="2.3" data-path="proposal.html"><a href="proposal.html#motivation-1"><i class="fa fa-check"></i><b>2.3</b> Motivation</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>3</b> Data</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="data.html"><a href="data.html#sources"><i class="fa fa-check"></i><b>3.1</b> Sources</a></li>
-<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a></li>
+<li class="chapter" data-level="3.2" data-path="data.html"><a href="data.html#cleaning-transformation"><i class="fa fa-check"></i><b>3.2</b> Cleaning / transformation</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="data.html"><a href="data.html#incident-extraction"><i class="fa fa-check"></i><b>3.2.1</b> Incident Extraction</a></li>
+<li class="chapter" data-level="3.2.2" data-path="data.html"><a href="data.html#nlp-feature-prediction"><i class="fa fa-check"></i><b>3.2.2</b> NLP Feature Prediction</a></li>
+</ul></li>
 <li class="chapter" data-level="3.3" data-path="data.html"><a href="data.html#missing-value-analysis"><i class="fa fa-check"></i><b>3.3</b> Missing value analysis</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a></li>
-<li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a></li>
-<li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
+<li class="chapter" data-level="4" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>4</b> Results</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="results.html"><a href="results.html#temporal-analysis-of-cybersecurity-incidents"><i class="fa fa-check"></i><b>4.1</b> Temporal Analysis of Cybersecurity Incidents</a></li>
+<li class="chapter" data-level="4.2" data-path="results.html"><a href="results.html#hacker-and-victim-analysis"><i class="fa fa-check"></i><b>4.2</b> Hacker and Victim Analysis</a></li>
+<li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#type-of-cyber-attack"><i class="fa fa-check"></i><b>4.3</b> Type of Cyber Attack</a></li>
+<li class="chapter" data-level="4.4" data-path="results.html"><a href="results.html#targeted-industries"><i class="fa fa-check"></i><b>4.4</b> Targeted Industries</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="interactive-component.html"><a href="interactive-component.html#attack-origin-bar-plot"><i class="fa fa-check"></i><b>5.1</b> Attack Origin Bar Plot</a></li>
+<li class="chapter" data-level="5.2" data-path="interactive-component.html"><a href="interactive-component.html#victim-origin-bar-plot"><i class="fa fa-check"></i><b>5.2</b> Victim Origin Bar Plot</a></li>
+<li class="chapter" data-level="5.3" data-path="interactive-component.html"><a href="interactive-component.html#geospatial-attacker-origin-plot-top-5"><i class="fa fa-check"></i><b>5.3</b> Geospatial Attacker Origin Plot Top 5</a></li>
+<li class="chapter" data-level="5.4" data-path="interactive-component.html"><a href="interactive-component.html#geospatial-victim-origin-plot-top-5"><i class="fa fa-check"></i><b>5.4</b> Geospatial Victim Origin Plot Top 5</a></li>
+<li class="chapter" data-level="5.5" data-path="interactive-component.html"><a href="interactive-component.html#future-work"><i class="fa fa-check"></i><b>5.5</b> Future Work</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="conclusion.html"><a href="conclusion.html#summary"><i class="fa fa-check"></i><b>6.1</b> Summary</a></li>
+<li class="chapter" data-level="6.2" data-path="conclusion.html"><a href="conclusion.html#limitations"><i class="fa fa-check"></i><b>6.2</b> Limitations</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -109,17 +147,17 @@
             <section class="normal" id="section-">
 <div id="proposal" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Proposal<a href="proposal.html#proposal" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="research-topic" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Research topic<a href="proposal.html#research-topic" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="research-topic-1" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Research topic<a href="proposal.html#research-topic-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Cybersecurity has become a growing issue globally, with the increase in internet penetration and digitalization. According to the FBI, the number of reported cybercrime incidents rose by about 300% in 2020 within the US alone. This does not come as a surprise since the COVID-19 pandemic provided the impetus for digital migration, which naturally leads to an increased financial incentive for hackers. Coincidentally, there has been an uptick in the use of cyber attacks by nation states fueled by the rise in geopolitical tensions between countries. Disruptions brought about by such incidents of cyber warfare are a cause of concern given their scale.</p>
 <p>Our project will investigate high-impact cyber attacks and incidents on government agencies, defense and high tech companies, or economic crimes with losses of more than a million dollars, retrieved from the Center for Strategic &amp; International Studies: <a href="https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents" class="uri">https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents</a>.</p>
 </div>
-<div id="data-availability" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> Data availability<a href="proposal.html#data-availability" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The data we will be using comes from the website mentioned above, from which one can download a PDF text file <code>221006_Significant_Cyber_Incidents.pdf</code> containing all the major cyber attacks from 2006 to present. Using regex and natural language processing, we can extract the following features: time of attack, origin of attacker, origin of victim, type of attack and the industry affected.</p>
+<div id="data-availability-1" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Data availability<a href="proposal.html#data-availability-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The data we will be using comes from the website mentioned above, from which one can download a PDF text file <code>221006_Significant_Cyber_Incidents.pdf</code> containing all the major cyber attacks from 2003 to present. Using regex and natural language processing, we can extract the following features: time of attack, origin of attacker, origin of victim, type of attack and the industry affected.</p>
 </div>
-<div id="motivation" class="section level2 hasAnchor" number="2.3">
-<h2><span class="header-section-number">2.3</span> Motivation<a href="proposal.html#motivation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="motivation-1" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Motivation<a href="proposal.html#motivation-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This project aims to gain a deeper understanding on the cyber incidents listed in the report. Specifically, we will look for methods to group the attacker and victim origin countries (e.g. by continent or GDP per capita) for analysis. At the same time, we will also consider exogenous variables that might affect the frequency or nature of cyber attacks, such as periods coinciding with the Ukraine War and the COVID-19 pandemic etc.</p>
 
 </div>
