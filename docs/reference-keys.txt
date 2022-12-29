@@ -17,3 +17,13 @@ temporal-analysis-of-cybersecurity-incidents
 hacker-and-victim-analysis
 targeted-industries
 type-of-cyber-attack
+attack-origin-bar-plot
+victim-origin-bar-plot
+geospatial-attacker-origin-plot-top-5
+geospatial-victim-origin-plot-top-5
+future-work
+research-topic-1
+data-availability-1
+motivation-1
+summary
+limitations
